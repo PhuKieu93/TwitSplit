@@ -1,25 +1,25 @@
 //
-//  MessageTableViewCell.swift
+//  RecieveMessageTableViewCell.swift
 //  TwitSplit
 //
-//  Created by Kieu Minh Phu on 4/3/18.
+//  Created by Kieu Minh Phu on 4/4/18.
 //  Copyright © 2018 Kieu Minh Phu. All rights reserved.
 //
 
 import UIKit
 
-struct SendMessageTableCellItem {
+struct ReceiveMessageTableCellItem {
     var message: String?
     var showBubbleTail: Bool?
 }
 
-class SendMessageTableViewCell: UITableViewCell {
-
+class ReceiveMessageTableViewCell: UITableViewCell {
+    
     lazy var messageLabel = UILabel()
     lazy var bubbleView = UIView()
     lazy var bubbleImageView = UIImageView()
     
-    var cellItem: SendMessageTableCellItem? {
+    var cellItem: ReceiveMessageTableCellItem? {
         
         didSet {
             self.setData()
@@ -45,21 +45,21 @@ class SendMessageTableViewCell: UITableViewCell {
         // bubbleView
         self.bubbleView.layer.cornerRadius = 9
         self.bubbleView.layer.masksToBounds = true
-        self.bubbleView.backgroundColor = TwitColor.blue.havelockBlue
+        self.bubbleView.backgroundColor = TwitColor.gray.iron
         self.bubbleView.isHidden = true
         self.addSubview(self.bubbleView)
         
         // bubble imageview
-        let image = UIImage(named: "bubble_sent")
+        let image = UIImage(named: "bubble_received")
         self.bubbleImageView.image = image?.resizableImage(withCapInsets: UIEdgeInsetsMake(9, 8.5, 9, 8.5), resizingMode: .stretch).withRenderingMode(.alwaysTemplate)
-        self.bubbleImageView.tintColor = TwitColor.blue.havelockBlue
+        self.bubbleImageView.tintColor = TwitColor.gray.iron
         self.bubbleImageView.isHidden = true
         self.addSubview(self.bubbleImageView)
         
         // messageLabel
         self.messageLabel.font = UIFont.systemFont(ofSize: 15)
         self.messageLabel.numberOfLines = 0
-        self.messageLabel.textColor = .white
+        self.messageLabel.textColor = .black
         self.addSubview(self.messageLabel)
         
         // Set constraint layout
@@ -69,7 +69,7 @@ class SendMessageTableViewCell: UITableViewCell {
             
             maker.width.lessThanOrEqualTo(strongSelf).multipliedBy(2/3.0)
             maker.top.equalTo(strongSelf).offset(7)
-            maker.right.equalTo(strongSelf).offset(-16)
+            maker.left.equalTo(strongSelf).offset(16)
             maker.bottom.equalTo(strongSelf).offset(-7)
         }
         
@@ -84,13 +84,13 @@ class SendMessageTableViewCell: UITableViewCell {
         }
         
         self.bubbleImageView.snp.makeConstraints { [weak self] (maker) in
-            
+
             guard let strongSelf = self else { return }
-            
-            maker.left.equalTo(strongSelf.messageLabel).offset(-8)
+
+            maker.left.equalTo(strongSelf.messageLabel).offset(-12)
             maker.top.equalTo(strongSelf.messageLabel).offset(-5)
             maker.bottom.equalTo(strongSelf.messageLabel).offset(5)
-            maker.right.equalTo(strongSelf.messageLabel).offset(12)
+            maker.right.equalTo(strongSelf.messageLabel).offset(8)
         }
     }
     

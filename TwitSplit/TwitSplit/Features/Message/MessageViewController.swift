@@ -66,6 +66,7 @@ class MessageViewController: BaseViewController {
         self.messageTableView.rowHeight = UITableViewAutomaticDimension
         self.messageTableView.estimatedRowHeight = 200
         self.messageTableView.register(SendMessageTableViewCell.self, forCellReuseIdentifier: "sendCell")
+        self.messageTableView.register(ReceiveMessageTableViewCell.self, forCellReuseIdentifier: "receiveCell")
         self.messageTableView.register(UITableViewCell.self, forCellReuseIdentifier: "whiteSpaceCell")
         self.messageTableView.dataSource = self
         self.messageTableView.delegate = self
@@ -131,6 +132,7 @@ class MessageViewController: BaseViewController {
         if let text = self.textField.text, text != "" {
             self.textField.text = nil
             self.sendMessage(text)
+//            self.recieveMessage(text)
         }
     }
     
@@ -172,6 +174,50 @@ class MessageViewController: BaseViewController {
             self.messageTableView.insertRows(at:indexPaths, with: .fade)
         }, completion: { (finished) in
 
+            if finished {
+                self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: true)
+            }
+        })
+    }
+    
+    func recieveMessage(_ message: String) {
+        
+        let limit = 50
+        var indexPaths = [IndexPath]()
+        
+        // Change bubble UI of last message
+        if let cellItem = self.cellItems[self.cellItems.count - 2] as? ReceiveMessageTableCellItem {
+            var newItem = cellItem
+            newItem.showBubbleTail = false
+            self.cellItems[self.cellItems.count - 2] = newItem
+            
+            self.messageTableView.reloadRows(at: [IndexPath(item: self.cellItems.count - 2, section: 0)], with: .none)
+        }
+        
+        // Add new message
+        if message.count <= limit {
+            self.cellItems.insert(ReceiveMessageTableCellItem(message: message, showBubbleTail: true), at: self.cellItems.count - 1)
+            indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
+            
+        } else {
+            let splitMessages = self.splitMessage(message, limit: limit)
+            
+            for (index, splitMessage) in splitMessages.enumerated() {
+                
+                if index == splitMessages.count - 1 {
+                    self.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: true), at: self.cellItems.count - 1)
+                } else {
+                    self.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: false), at: self.cellItems.count - 1)
+                }
+                
+                indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
+            }
+        }
+        
+        self.messageTableView.performBatchUpdates({
+            self.messageTableView.insertRows(at:indexPaths, with: .fade)
+        }, completion: { (finished) in
+            
             if finished {
                 self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: true)
             }
@@ -308,6 +354,13 @@ extension MessageViewController: UITableViewDataSource {
         
         if let cellItem = self.cellItems[indexPath.row] as? SendMessageTableCellItem {
             let cell = tableView.dequeueReusableCell(withIdentifier: "sendCell", for: indexPath) as! SendMessageTableViewCell
+            cell.cellItem = cellItem
+            
+            return cell
+        }
+        
+        if let cellItem = self.cellItems[indexPath.row] as? ReceiveMessageTableCellItem {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "receiveCell", for: indexPath) as! ReceiveMessageTableViewCell
             cell.cellItem = cellItem
             
             return cell
