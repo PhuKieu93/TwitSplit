@@ -15,6 +15,11 @@
 		370A01152073AB1100C3CBCC /* MessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A01142073AB1100C3CBCC /* MessageViewController.swift */; };
 		370A01182073AC0700C3CBCC /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A01172073AC0700C3CBCC /* Utilities.swift */; };
 		370A011C2073B16500C3CBCC /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A011B2073B16500C3CBCC /* BaseViewController.swift */; };
+		370A011F2073C1E100C3CBCC /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A011E2073C1E100C3CBCC /* UIView+Extensions.swift */; };
+		370A01212073C36B00C3CBCC /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 370A01202073C36B00C3CBCC /* Default-568h@2x.png */; };
+		370A01232073CDF000C3CBCC /* SendMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A01222073CDF000C3CBCC /* SendMessageTableViewCell.swift */; };
+		370A01252074826300C3CBCC /* ColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A01242074826300C3CBCC /* ColorManager.swift */; };
+		370A01282074857C00C3CBCC /* BubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370A01272074857C00C3CBCC /* BubbleView.swift */; };
 		474B7B3CB49CC2CFE60268AC /* Pods_TwitSplitTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCF08E62AEBD0123CD193CD0 /* Pods_TwitSplitTests.framework */; };
 		5A80E2439C8E3B9A5B5155A8 /* Pods_TwitSplitUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DCCDD9D149A80A87D3E83A80 /* Pods_TwitSplitUITests.framework */; };
 		7064513C004FD8A5652197CE /* Pods_TwitSplit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 479F8DCDC635EDBF508BDB74 /* Pods_TwitSplit.framework */; };
@@ -55,6 +60,11 @@
 		370A01172073AC0700C3CBCC /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		370A01192073AFDA00C3CBCC /* TwitSplit-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "TwitSplit-Bridging-Header.h"; sourceTree = "<group>"; };
 		370A011B2073B16500C3CBCC /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		370A011E2073C1E100C3CBCC /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
+		370A01202073C36B00C3CBCC /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		370A01222073CDF000C3CBCC /* SendMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMessageTableViewCell.swift; sourceTree = "<group>"; };
+		370A01242074826300C3CBCC /* ColorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorManager.swift; sourceTree = "<group>"; };
+		370A01272074857C00C3CBCC /* BubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleView.swift; sourceTree = "<group>"; };
 		479F8DCDC635EDBF508BDB74 /* Pods_TwitSplit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TwitSplit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		70AECB7024688C0B1105A1D1 /* Pods-TwitSplitUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitSplitUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-TwitSplitUITests/Pods-TwitSplitUITests.release.xcconfig"; sourceTree = "<group>"; };
 		A9C5E831FA1BD26303C2A24A /* Pods-TwitSplitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitSplitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TwitSplitTests/Pods-TwitSplitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -108,6 +118,7 @@
 		370A00D82073A7EF00C3CBCC = {
 			isa = PBXGroup;
 			children = (
+				370A01202073C36B00C3CBCC /* Default-568h@2x.png */,
 				370A00E32073A7EF00C3CBCC /* TwitSplit */,
 				370A00F82073A7EF00C3CBCC /* TwitSplitTests */,
 				370A01032073A7F000C3CBCC /* TwitSplitUITests */,
@@ -130,6 +141,8 @@
 		370A00E32073A7EF00C3CBCC /* TwitSplit */ = {
 			isa = PBXGroup;
 			children = (
+				370A01262074856400C3CBCC /* BubbleView */,
+				370A011D2073C1CA00C3CBCC /* Extensions */,
 				370A011A2073AFF200C3CBCC /* AppInfo */,
 				370A01122073AADC00C3CBCC /* Features */,
 				370A01162073ABF500C3CBCC /* Utilities */,
@@ -170,6 +183,7 @@
 			isa = PBXGroup;
 			children = (
 				370A01142073AB1100C3CBCC /* MessageViewController.swift */,
+				370A01222073CDF000C3CBCC /* SendMessageTableViewCell.swift */,
 			);
 			path = Message;
 			sourceTree = "<group>";
@@ -178,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				370A01172073AC0700C3CBCC /* Utilities.swift */,
+				370A01242074826300C3CBCC /* ColorManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -190,6 +205,23 @@
 				370A01192073AFDA00C3CBCC /* TwitSplit-Bridging-Header.h */,
 			);
 			path = AppInfo;
+			sourceTree = "<group>";
+		};
+		370A011D2073C1CA00C3CBCC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				370A011E2073C1E100C3CBCC /* UIView+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		370A01262074856400C3CBCC /* BubbleView */ = {
+			isa = PBXGroup;
+			children = (
+				370A01272074857C00C3CBCC /* BubbleView.swift */,
+			);
+			name = BubbleView;
+			path = Libraries/BubbleView;
 			sourceTree = "<group>";
 		};
 		7F1C50E6375637A21350F9C3 /* Frameworks */ = {
@@ -320,6 +352,7 @@
 			files = (
 				370A00EF2073A7EF00C3CBCC /* LaunchScreen.storyboard in Resources */,
 				370A00EC2073A7EF00C3CBCC /* Assets.xcassets in Resources */,
+				370A01212073C36B00C3CBCC /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,10 +515,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				370A01252074826300C3CBCC /* ColorManager.swift in Sources */,
 				370A01182073AC0700C3CBCC /* Utilities.swift in Sources */,
+				370A01282074857C00C3CBCC /* BubbleView.swift in Sources */,
 				370A011C2073B16500C3CBCC /* BaseViewController.swift in Sources */,
+				370A011F2073C1E100C3CBCC /* UIView+Extensions.swift in Sources */,
 				370A01152073AB1100C3CBCC /* MessageViewController.swift in Sources */,
 				370A00E52073A7EF00C3CBCC /* AppDelegate.swift in Sources */,
+				370A01232073CDF000C3CBCC /* SendMessageTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,6 +622,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/TwitSplit/AppInfo/TwitSplit-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -634,6 +672,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/TwitSplit/AppInfo/TwitSplit-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -645,7 +684,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Y4XS8T4Z7D;
 				INFOPLIST_FILE = "$(SRCROOT)/TwitSplit/AppInfo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.oneworld.anote-stagging";
@@ -661,7 +700,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = Y4XS8T4Z7D;
 				INFOPLIST_FILE = "$(SRCROOT)/TwitSplit/AppInfo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.oneworld.anote-stagging";

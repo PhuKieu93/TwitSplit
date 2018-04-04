@@ -6,8 +6,5 @@
 //  Copyright © 2018 Kieu Minh Phu. All rights reserved.
 //
 
-#ifndef TwitSplit_Bridging_Header_h
-#define TwitSplit_Bridging_Header_h
-
-
-#endif /* TwitSplit_Bridging_Header_h */
+@import SnapKit;
+@import SwiftyBeaver;

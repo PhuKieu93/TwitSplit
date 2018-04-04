@@ -12,8 +12,9 @@ class BaseViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.setNavigationBarWhiteStyle()
+        self.hideKeyboardWhenTappedAround()
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,11 +27,20 @@ class BaseViewController: UIViewController {
     func setNavigationBarWhiteStyle() {
         
         self.navigationController?.navigationBar.barTintColor = UIColor.white
-        self.navigationController?.navigationBar.tintColor = .blue
+        self.navigationController?.navigationBar.tintColor = .black
         self.navigationController?.navigationBar.isTranslucent = false
         
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor : UIColor.blue]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 16), NSAttributedStringKey.foregroundColor : UIColor.black]
         self.navigationController?.navigationBar.setTitleVerticalPositionAdjustment(0, for: .default)
+    }
+    
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        self.view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        self.view.endEditing(true)
     }
     
 }
