@@ -8,3 +8,4 @@
 
 @import SnapKit;
 @import SwiftyBeaver;
+@import GrowingTextView;

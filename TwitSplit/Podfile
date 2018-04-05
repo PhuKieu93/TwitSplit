@@ -9,6 +9,7 @@ target 'TwitSplit' do
 
   pod 'SnapKit', '~> 4.0.0'
   pod 'SwiftyBeaver'
+  pod 'GrowingTextView', '~> 0.5.5'
 
   target 'TwitSplitTests' do
     inherit! :search_paths

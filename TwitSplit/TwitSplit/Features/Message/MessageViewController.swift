@@ -9,9 +9,9 @@
 import UIKit
 
 class MessageViewController: BaseViewController {
-
+    
     @objc lazy var typeTextView = UIView()
-    lazy var textField = UITextField()
+    lazy var textView = GrowingTextView()
     lazy var sendButton = UIButton()
     lazy var messageTableView = UITableView()
     
@@ -21,7 +21,7 @@ class MessageViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.initializeUI()
         self.setWhiteSpaceTableView()
         
@@ -29,12 +29,20 @@ class MessageViewController: BaseViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        
+//        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] (timer) in
+//            
+//            guard let strongSelf = self else { return }
+//            
+//            let messages = ["Hello", "How are you?", "dF9KJp6Yqe4:APA91bFITYB0qOyIHRs9aBY waefawef dF9KJp6Yqe4:APA91bFITYB0qOyIHRs9aBY waefawef awefawef"]
+//            strongSelf.recieveMessage(messages[Int(arc4random_uniform(3))])
+//        }
     }
     
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -46,13 +54,23 @@ class MessageViewController: BaseViewController {
         self.view.backgroundColor = .white
         
         // typeTextView
-        self.typeTextView.backgroundColor = .white
+        self.typeTextView.backgroundColor = TwitColor.gray.gallery
         self.view.addSubview(self.typeTextView)
         
         // textField
-        self.textField.placeholder = "Start a message"
-        self.textField.borderStyle = .roundedRect
-        self.typeTextView.addSubview(self.textField)
+        self.textView.maxLength = 0
+        self.textView.trimWhiteSpaceWhenEndEditing = false
+        self.textView.placeholderColor = UIColor(white: 0.8, alpha: 1.0)
+        self.textView.minHeight = 25.0
+        self.textView.maxHeight = 80.0
+        self.textView.backgroundColor = .white
+        self.textView.layer.cornerRadius = 4.0
+        self.textView.layer.borderColor = UIColor.groupTableViewBackground.cgColor
+        self.textView.layer.borderWidth = 1
+        self.textView.layer.masksToBounds = true
+        self.textView.font = UIFont.systemFont(ofSize: 15)
+        self.textView.placeholder = "Start a message"
+        self.typeTextView.addSubview(self.textView)
         
         // send button
         self.sendButton.setTitle("Send", for: .normal)
@@ -77,11 +95,11 @@ class MessageViewController: BaseViewController {
             
             guard let strongSelf = self else { return }
             
-            maker.height.equalTo(50)
+            maker.height.greaterThanOrEqualTo(50)
             maker.left.right.bottom.equalTo(strongSelf.view)
         }
         
-        self.textField.snp.makeConstraints { [weak self] (maker) in
+        self.textView.snp.makeConstraints { [weak self] (maker) in
             
             guard let strongSelf = self else { return }
             
@@ -93,9 +111,9 @@ class MessageViewController: BaseViewController {
             
             guard let strongSelf = self else { return }
             
-            maker.left.equalTo(strongSelf.textField.snp.right).offset(8)
-            maker.centerY.equalTo(strongSelf.textField)
-            maker.width.equalTo(45)
+            maker.left.equalTo(strongSelf.textView.snp.right).offset(8)
+            maker.bottom.equalTo(strongSelf.textView)
+            maker.width.equalTo(50)
             maker.right.equalTo(strongSelf.view).offset(-8)
         }
         
@@ -107,7 +125,7 @@ class MessageViewController: BaseViewController {
             maker.bottom.equalTo(strongSelf.typeTextView.snp.top)
         }
     }
-
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath == "typeTextView.bounds" {
@@ -121,7 +139,7 @@ class MessageViewController: BaseViewController {
         
         // add top tableview with 20pt
         self.cellItems.append(CGFloat(20.0))
-
+        
         // add bottom tableview with 20pt
         self.cellItems.append(CGFloat(20.0))
     }
@@ -129,118 +147,174 @@ class MessageViewController: BaseViewController {
     // MARK: Action
     @objc func sendButtonTapped(button: UIButton) {
         
-        if let text = self.textField.text, text != "" {
-            self.textField.text = nil
+        if let text = self.textView.text, text != "" {
             self.sendMessage(text)
-//            self.recieveMessage(text)
+        }
+    }
+    
+    func handleMessage(_ message: String, limit: Int) -> (messages: [String]?, error: String?) {
+        
+        if message.count <= limit {
+            return ([message], nil)
+            
+        } else {
+            return self.splitMessage(message, limit: limit)
         }
     }
     
     func sendMessage(_ message: String) {
         
         let limit = 50
-        var indexPaths = [IndexPath]()
         
-        // Change bubble UI of last message
-        if let cellItem = self.cellItems[self.cellItems.count - 2] as? SendMessageTableCellItem {
-            var newItem = cellItem
-            newItem.showBubbleTail = false
-            self.cellItems[self.cellItems.count - 2] = newItem
+        // using serialqueue and sync to send data order
+        let serialQueue = DispatchQueue(label: "sendMessageQueue")
+        serialQueue.sync { [weak self] in
             
-            self.messageTableView.reloadRows(at: [IndexPath(item: self.cellItems.count - 2, section: 0)], with: .none)
-        }
-        
-        // Add new message
-        if message.count <= limit {
-            self.cellItems.insert(SendMessageTableCellItem(message: message, showBubbleTail: true), at: self.cellItems.count - 1)
-            indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
+            guard let strongSelf = self else { return }
             
-        } else {
-            let splitMessages = self.splitMessage(message, limit: limit)
+            let completion = strongSelf.handleMessage(message, limit: limit)
             
-            for (index, splitMessage) in splitMessages.enumerated() {
+            DispatchQueue.main.async { [weak self] in
                 
-                if index == splitMessages.count - 1 {
-                    self.cellItems.insert(SendMessageTableCellItem(message: splitMessage, showBubbleTail: true), at: self.cellItems.count - 1)
-                } else {
-                    self.cellItems.insert(SendMessageTableCellItem(message: splitMessage, showBubbleTail: false), at: self.cellItems.count - 1)
-                }
+                guard let strongSelf = self else { return }
                 
-                indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
-            }
-        }
-        
-        self.messageTableView.performBatchUpdates({
-            self.messageTableView.insertRows(at:indexPaths, with: .fade)
-        }, completion: { (finished) in
+                var indexPaths = [IndexPath]()
+                var reloadIndexPath: IndexPath?
 
-            if finished {
-                self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: true)
+                // Change bubble UI of last message
+                if let cellItem = strongSelf.cellItems[strongSelf.cellItems.count - 2] as? SendMessageTableCellItem {
+                    var newItem = cellItem
+                    newItem.showBubbleTail = false
+                    strongSelf.cellItems[strongSelf.cellItems.count - 2] = newItem
+                    reloadIndexPath = IndexPath(item: strongSelf.cellItems.count - 2, section: 0)
+                }
+
+                // Add new message
+                if let messages = completion.messages {
+                    for (index, splitMessage) in messages.enumerated() {
+
+                        if index == messages.count - 1 {
+                            strongSelf.cellItems.insert(SendMessageTableCellItem(message: splitMessage, showBubbleTail: true), at: strongSelf.cellItems.count - 1)
+                        } else {
+                            strongSelf.cellItems.insert(SendMessageTableCellItem(message: splitMessage, showBubbleTail: false), at: strongSelf.cellItems.count - 1)
+                        }
+
+                        indexPaths.append(IndexPath(item: strongSelf.cellItems.count - 2, section: 0))
+                    }
+
+                    strongSelf.messageTableView.performBatchUpdates({
+
+                        if let validIndexPath = reloadIndexPath {
+                            strongSelf.messageTableView.reloadRows(at: [validIndexPath], with: .none)
+                        }
+
+                        strongSelf.messageTableView.insertRows(at:indexPaths, with: .fade)
+
+                    }, completion: { (finished) in
+
+                        if finished {
+                            strongSelf.messageTableView.scrollToRow(at: IndexPath(item: strongSelf.cellItems.count - 1, section: 0), at: .bottom, animated: true)
+                        }
+                    })
+                    
+                    strongSelf.textView.text = nil
+                
+                } else {
+
+                    let alertVC = UIAlertController(title: "Error", message: completion.error, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alertVC.addAction(okAction)
+
+                    strongSelf.present(alertVC, animated: true, completion: nil)
+                }
             }
-        })
+        }
     }
     
     func recieveMessage(_ message: String) {
         
         let limit = 50
-        var indexPaths = [IndexPath]()
-        
-        // Change bubble UI of last message
-        if let cellItem = self.cellItems[self.cellItems.count - 2] as? ReceiveMessageTableCellItem {
-            var newItem = cellItem
-            newItem.showBubbleTail = false
-            self.cellItems[self.cellItems.count - 2] = newItem
+        // using serialqueue and sync to recive data order
+        let serialQueue = DispatchQueue(label: "receiveMessageQueue")
+        serialQueue.sync { [weak self] in
             
-            self.messageTableView.reloadRows(at: [IndexPath(item: self.cellItems.count - 2, section: 0)], with: .none)
-        }
-        
-        // Add new message
-        if message.count <= limit {
-            self.cellItems.insert(ReceiveMessageTableCellItem(message: message, showBubbleTail: true), at: self.cellItems.count - 1)
-            indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
+            guard let strongSelf = self else { return }
             
-        } else {
-            let splitMessages = self.splitMessage(message, limit: limit)
+            let completion = strongSelf.handleMessage(message, limit: limit)
             
-            for (index, splitMessage) in splitMessages.enumerated() {
+            DispatchQueue.main.async { [weak self] in
                 
-                if index == splitMessages.count - 1 {
-                    self.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: true), at: self.cellItems.count - 1)
-                } else {
-                    self.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: false), at: self.cellItems.count - 1)
+                guard let strongSelf = self else { return }
+                
+                var indexPaths = [IndexPath]()
+                var reloadIndexPath: IndexPath?
+                
+                // Change bubble UI of last message
+                if let cellItem = strongSelf.cellItems[strongSelf.cellItems.count - 2] as? ReceiveMessageTableCellItem {
+                    var newItem = cellItem
+                    newItem.showBubbleTail = false
+                    strongSelf.cellItems[strongSelf.cellItems.count - 2] = newItem
+                    reloadIndexPath = IndexPath(item: strongSelf.cellItems.count - 2, section: 0)
                 }
                 
-                indexPaths.append(IndexPath(item: self.cellItems.count - 2, section: 0))
+                // Add new message
+                if let messages = completion.messages {
+                    for (index, splitMessage) in messages.enumerated() {
+                        
+                        if index == messages.count - 1 {
+                            strongSelf.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: true), at: strongSelf.cellItems.count - 1)
+                        } else {
+                            strongSelf.cellItems.insert(ReceiveMessageTableCellItem(message: splitMessage, showBubbleTail: false), at: strongSelf.cellItems.count - 1)
+                        }
+                        
+                        indexPaths.append(IndexPath(item: strongSelf.cellItems.count - 2, section: 0))
+                    }
+                    
+                    strongSelf.messageTableView.performBatchUpdates({
+                        
+                        if let validIndexPath = reloadIndexPath {
+                            strongSelf.messageTableView.reloadRows(at: [validIndexPath], with: .none)
+                        }
+                        
+                        strongSelf.messageTableView.insertRows(at:indexPaths, with: .fade)
+                        
+                    }, completion: nil)
+                    
+                } else {
+                    
+                    let alertVC = UIAlertController(title: "Error", message: completion.error, preferredStyle: .alert)
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    alertVC.addAction(okAction)
+                    
+                    strongSelf.present(alertVC, animated: true, completion: nil)
+                }
             }
         }
-        
-        self.messageTableView.performBatchUpdates({
-            self.messageTableView.insertRows(at:indexPaths, with: .fade)
-        }, completion: { (finished) in
-            
-            if finished {
-                self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: true)
-            }
-        })
     }
     
     // MARK: Split message
     
-    func splitMessage(_ message: String, limit: Int) -> [String] {
+    func splitMessage(_ message: String, limit: Int) -> (messages: [String]?, error: String?) {
         
         var output = [String]()
+        let errorMessage = "Message is not valid"
         let subStrings = message.split(separator: " ")
         var string = ""
-        var sum = subStrings.first?.count ?? 0
+        var sum = 0
         
         var indexMessage = 1
         var i = 0
         var numberOfMessage = 0
         
         // get minimum number of message
-        for i in 1..<subStrings.count {
+        for i in 0..<subStrings.count {
             
             let subString = subStrings[i]
+            
+            if subString.count > limit {
+                return (nil, errorMessage)
+            }
+            
             let temp = sum + subString.count + 1
             
             // subtract 4 characters (minimum number of characters indicator "@/@ ")
@@ -284,13 +358,18 @@ class MessageViewController: BaseViewController {
             }
             
             if i == subStrings.count - 1 {
+                
+                if string.count > limit {
+                    return (nil, errorMessage)
+                }
+                
                 output.append(String(string))
             }
             
             i += 1
         }
         
-        return output
+        return (output, nil)
     }
     
     // MARK: Keyboard
@@ -336,9 +415,9 @@ class MessageViewController: BaseViewController {
             self.view.layoutIfNeeded()
             
             if self.cellItems.count > 0 {
-                 self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: false)
+                self.messageTableView.scrollToRow(at: IndexPath(item: self.cellItems.count - 1, section: 0), at: .bottom, animated: false)
             }
-           
+            
             
         }, completion: nil)
     }
