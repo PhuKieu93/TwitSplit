@@ -29,14 +29,6 @@ class MessageViewController: BaseViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
-        
-//        Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] (timer) in
-//            
-//            guard let strongSelf = self else { return }
-//            
-//            let messages = ["Hello", "How are you?", "dF9KJp6Yqe4:APA91bFITYB0qOyIHRs9aBY waefawef dF9KJp6Yqe4:APA91bFITYB0qOyIHRs9aBY waefawef awefawef"]
-//            strongSelf.recieveMessage(messages[Int(arc4random_uniform(3))])
-//        }
     }
     
     deinit {
@@ -165,7 +157,6 @@ class MessageViewController: BaseViewController {
     func sendMessage(_ message: String) {
         
         let limit = 50
-        
         // using serialqueue and sync to send data order
         let serialQueue = DispatchQueue(label: "sendMessageQueue")
         serialQueue.sync { [weak self] in
